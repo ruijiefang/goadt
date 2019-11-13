@@ -1,10 +1,17 @@
 package storage
 
+//
+// Implementation of LLRB.
+// Ref: https://www.cs.princeton.edu/~rs/talks/LLRB/LLRB.pdf
+//
+
+// definitions of red and black.
 const (
 	Red = iota
 	Black = iota
 )
 
+// a single node inside the tree.
 type tree_node struct {
 	left *tree_node
 	right *tree_node
@@ -14,6 +21,7 @@ type tree_node struct {
 
 }
 
+// RedBlackTree ADT.
 type RedBlackTree struct {
 	root *tree_node
 	size uint32
@@ -28,6 +36,7 @@ func rotate_left(parent *tree_node) {
 	parent.color = Red
 }
 
+// right rotation
 func rotate_right(parent *tree_node) {
 	var left_child = parent.left
 	parent.left = left_child.right
@@ -36,6 +45,7 @@ func rotate_right(parent *tree_node) {
 	parent.color = Red
 }
 
+// flip the color of a single node
 func color_flip_1(h *tree_node) {
 	if h.color == Red {
 		h.color = Black
@@ -44,20 +54,35 @@ func color_flip_1(h *tree_node) {
 	}
 }
 
+// flip the color of a parent and its children
 func color_flip(h *tree_node) {
 	color_flip_1(h)
-	color_flip_1(h.left)
-	color_flip_1(h.right)
+	if (h.left != nil) {
+		color_flip_1(h.left)
+	}
+	if (h.right != nil) {
+		color_flip_1(h.right)
+	}
 }
 
+func move_red_left(h *tree_node) *tree_node {
+	color_flip(h)
+	if //TODOTODO
+}
+
+func move_red_right(h *tree_node) *tree_node {
+
+}
 func (t *RedBlackTree) Size() uint32 {
 	return t.size
 }
 
+// Returns a new RedBlackTree type
 func New() *RedBlackTree {
 	return &RedBlackTree{root: nil, size:0}
 }
 
+// Existence
 func (t *RedBlackTree) Exists(key int) bool {
 	var ptr = t.root
 	for ptr != nil {
@@ -86,8 +111,28 @@ func (t *RedBlackTree) Find(key int) interface{} {
 	return nil
 }
 
-func insert(h * tree_node, key int, val interface{}) {
+func insert(h * tree_node, key int, val interface{}) *tree_node {
+	if h == nil {
+		return &tree_node{
+			left:  nil,
+			right: nil,
+			color: Red,
+			key:   key,
+			val:   nil,
+		}
+	}
 
+	if h.left.color == Red && h.right.color == Red {
+		color_flip(h)
+	}
+
+	if h.key == key {
+		h.val = val
+	} else if h.key < key {
+		h.left = insert(h.left, key, val)
+	} else /* h.key > key */ {
+		h.right = insert(h.right, key, val)
+	}
 }
 
 func (t *RedBlackTree) Insert(key int, val interface{}) {
@@ -95,26 +140,36 @@ func (t *RedBlackTree) Insert(key int, val interface{}) {
 		t.root = &tree_node{
 			left:  nil,
 			right: nil,
-			color: Black,
+			color: Red,
 			key:   key,
 			val:   val,
 		}
 		return
 	}
-	insert(t.root, key, val)
+	t.root = insert(t.root, key, val)
 	t.root.color = Black
+}
+
+func delete_min(h *tree_node) *tree_node {
+	if h.left == nil {
+		return nil
+	}
+
+	if !(h.left.color == Red) && !(h.left.left.color == Red) {
+		h =
+	}
 }
 
 func delete(t *RedBlackTree, key int, val interface{}) {
 
 }
 
-func (t *RedBlackTree) Delte(key int, val interface{}) {
+func (t *RedBlackTree) Delete(key int, val interface{}) {
 	if t.size == 0 {
 		t.root = &tree_node{
 			left:  nil,
 			right: nil,
-			color: Black,
+			color: Red,
 			key:   key,
 			val:   val,
 		}
